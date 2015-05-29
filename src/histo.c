@@ -1,17 +1,10 @@
+#include "histo.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 static const size_t bin_size = sizeof(float) + sizeof(unsigned int);
-
-typedef struct {
-    int count;
-    float min;
-    float max;
-    void* bins;
-    size_t bin_count;
-    size_t max_bin_count;
-} histo_t;
 
 inline static float* k(const void* bin) {
     return (float*) bin;
@@ -155,32 +148,4 @@ float histo_query(histo_t* this, float quantile) {
             return lhs_key + (rhs_key - lhs_key) * (quantile * this->count - lhs_count) / (rhs_count - lhs_count);
         }
     }
-}
-
-void histo_lol(histo_t* this) {
-    printf(
-        "min: %f, p50: %f, p90: %f, p95: %f, p99: %f, p995: %f, p999: %f, p9995: %f, p9999: %f, max: %f\n",
-        histo_query(this, 0),
-        histo_query(this, 0.5),
-        histo_query(this, 0.9),
-        histo_query(this, 0.95),
-        histo_query(this, 0.99),
-        histo_query(this, 0.995),
-        histo_query(this, 0.999),
-        histo_query(this, 0.9995),
-        histo_query(this, 0.9999),
-        histo_query(this, 1));
-}
-
-int main(int argc, char** argv) {
-    histo_t histo;
-    histo_init(&histo, 40);
-    while (1) {
-        float key;
-        scanf("%f", &key);
-        histo_insert(&histo, key);
-        histo_print(&histo);
-        histo_lol(&histo);
-    }
-    return 0;
 }
